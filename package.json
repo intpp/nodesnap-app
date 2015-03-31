@@ -1,0 +1,16 @@
+{
+  "name": "monosnap-uploader",
+  "version": "1.0.0",
+  "description": "Monosnap uploader in NodeJs",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "intpp",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+      "chokidar": "*",
+      "form-data": "*",
+      "copy-paste": "*"
+  }
+}

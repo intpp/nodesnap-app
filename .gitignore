@@ -1,0 +1,4 @@
+node_modules
+.idea
+data/images.json
+data/user.json

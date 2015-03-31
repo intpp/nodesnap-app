@@ -1,0 +1,9 @@
+{
+  "directory": "{DIRECTORY_WITH_IMAGES}",
+  "device_info": {
+    "type": "Nodesnap",
+    "model": "NODESNAP v1.0.0",
+    "name": "My-SNAPTOP",
+    "version": "1.0.0"
+  }
+}

@@ -30,8 +30,8 @@ NodeJs Monosnap uploader application for Linux, Windows, Mac
 2. Get your short url for uploaded image
 
 # TODO
-[ ] Configure directory with images after first start
-[ ] Automatic creation of all needed files
-[ ] Checking required directories and files
-[ ] Remove file from monosnap
-[ ] ...
+- [ ] Configure directory with images after first start
+- [ ] Automatic creation of all needed files
+- [ ] Checking required directories and files
+- [ ] Remove file from monosnap
+- [ ] ...

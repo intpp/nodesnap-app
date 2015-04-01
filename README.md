@@ -28,3 +28,10 @@ NodeJs Monosnap uploader application for Linux, Windows, Mac
 # USAGE
 1. Save or copy your image to directory
 2. Get your short url for uploaded image
+
+# TODO
+[] Configure directory with images after first start
+[] Automatic creation of all needed files
+[] Checking required directories and files
+[] Remove file from monosnap
+[] ...

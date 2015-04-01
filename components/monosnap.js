@@ -5,21 +5,16 @@ var apiConnector = require('./api.js'),
     copyPaster = require('copy-paste').global(),
     instance;
 
-var readline = require('readline');
+var readline = require('./readline.js');
 
-var rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
-
-var Application = function () {
+var Application = function (config) {
     var that = this;
 
     that.apiObject = null;
     that.shortenerApiObject = null;
     that.authorized = false;
 
-    that.config = {};
+    that.config = config || {};
     that.watcher = null;
 
     that.accessToken = null;
@@ -41,7 +36,7 @@ var Application = function () {
         });
 
         that.images = that.loadData('images.json') || {};
-        that.userData = that.loadData('user.json') || {};
+        that.userData = that.config.user || {};
 
         if (that.userData.access_token !== undefined) {
             that.accessToken = that.userData.access_token;
@@ -85,17 +80,23 @@ Application.prototype.loadData = function (fileName) {
 Application.prototype.authorize = function (callback) {
     var that = this;
 
-    rl.question("Email: ", function (email) {
+    console.log('>> Authorization!');
+    readline.question("Email: ", function (email) {
         if (email !== '') {
-            rl.question("Password: ", function (password) {
+            readline.hiddenQuestion("Password: ", function (password) {
                 if (password !== '') {
-                    rl.close();
+                    readline.close();
 
                     that.apiObject.makeRequest('/login', {
                         "query": JSON.stringify({
                             "mail": email,
                             "pass": password,
-                            "device_info": that.config.device_info
+                            "device_info": {
+                                "type": "Nodesnap",
+                                "model": "NODESNAP v1.0.0",
+                                "name": "My-SNAPTOP",
+                                "version": "1.0.0"
+                            }
                         })
                     }, function (response) {
                         if (response.result === true) {
@@ -104,7 +105,8 @@ Application.prototype.authorize = function (callback) {
                             that.accessToken = response.access_token;
                             that.userData = response.user;
 
-                            fs.writeFile(currentDirectory + '/data/user.json', JSON.stringify(response));
+                            that.config.user = response;
+                            fs.writeFile(currentDirectory + '/data/config.json', JSON.stringify(that.config));
                         } else {
                             that.authorized = false;
                         }
@@ -113,13 +115,13 @@ Application.prototype.authorize = function (callback) {
                     });
                 } else {
                     console.log('Password can\'t be empty!');
-                    rl.close();
+                    readline.close();
                     callback(false);
                 }
             });
         } else {
             console.log('Email can\'t be empty!');
-            rl.close();
+            readline.close();
             callback(false);
         }
     });
@@ -133,10 +135,9 @@ Application.prototype.getAccessToken = function () {
     return this.accessToken || null;
 };
 
-Application.prototype.start = function (config) {
+Application.prototype.start = function () {
     var that = this;
 
-    that.config = config || {};
     if (!that.isAuthorized()) {
         that.authorize(function (result) {
             if (result) {
@@ -148,9 +149,14 @@ Application.prototype.start = function (config) {
     }
 };
 
+Application.prototype.getFileName = function (path) {
+    var that = this;
+    return path.replace(that.config.directory, "").replace('\/', '');
+};
+
 Application.prototype.isNewFile = function (path) {
     var that = this,
-        imageName = path.replace(that.config.directory, "");
+        imageName = that.getFileName(path);
 
     for (var id in that.images) {
         if (that.images[id] === imageName) {
@@ -163,7 +169,8 @@ Application.prototype.isNewFile = function (path) {
 Application.prototype.watch = function () {
     var that = this;
 
-    that.watcher = chokidar.watch(that.config.directory, {
+    console.log('Starting watch...');
+    that.watcher = chokidar.watch(that.config.directory + '*\.(png|jpe?g|gif|bmp)', {
         ignored: /[\/\\]\./, persistent: true
     });
 
@@ -180,7 +187,7 @@ Application.prototype.watch = function () {
 
 Application.prototype.uploadFile = function (path) {
     var that = this,
-        fileName = path.replace(that.config.directory, "");
+        fileName = that.getFileName(path);
 
     if (that.isNewFile(path)) {
         clearTimeout(that.uploadTimeouts[fileName]);
@@ -224,9 +231,9 @@ Application.prototype.addToUploaded = function (id, name) {
     fs.writeFile(currentDirectory + '/data/images.json', JSON.stringify(that.images));
 };
 
-exports.getInstance = function () {
+exports.getInstance = function (config) {
     if (instance === undefined) {
-        instance = new Application();
+        instance = new Application(config);
     }
 
     return instance;

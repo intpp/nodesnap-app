@@ -1,5 +1,5 @@
 {
-  "name": "monosnap-uploader",
+  "name": "nodesnap-app",
   "version": "1.0.0",
   "description": "Monosnap uploader in NodeJs",
   "main": "app.js",

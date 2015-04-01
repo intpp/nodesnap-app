@@ -24,12 +24,6 @@ Api.prototype.makeRequest = function (name, params, callback) {
 
     try {
         var requestData = new Buffer(queryString.stringify(params));
-        console.log('==========================[ REQUEST - START ]===============================');
-        console.log('Request:', name);
-        console.log('Params:', params);
-        console.log('Prepared-params:', requestData.toString());
-        console.log('Length:', requestData.length);
-
         var options = {
             host: that.options.domain,
             path: name,
@@ -50,10 +44,8 @@ Api.prototype.makeRequest = function (name, params, callback) {
             response.on('end', function () {
                 if (typeof callback === 'function') {
                     try {
-                        console.log('==========================[ REQUEST - END ]===============================');
                         callback(JSON.parse(responseData));
                     } catch (e) {
-                        console.log('==========================[ REQUEST - END ]===============================');
                         console.log(e);
                     }
                 }
@@ -63,7 +55,6 @@ Api.prototype.makeRequest = function (name, params, callback) {
         request.write(requestData);
         request.end();
     } catch (e) {
-        console.log('==========================[ REQUEST - END ]===============================');
         console.log(e);
     }
 };
